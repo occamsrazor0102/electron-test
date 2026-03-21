@@ -1,0 +1,14 @@
+"""Detection analyzers -- one module per detection layer."""
+
+from llm_detector.analyzers.preamble import run_preamble, PREAMBLE_PATTERNS
+from llm_detector.analyzers.fingerprint import run_fingerprint, FINGERPRINT_WORDS
+from llm_detector.analyzers.prompt_signature import run_prompt_signature, CONSTRAINT_FRAMES, META_DESIGN_PATTERNS
+from llm_detector.analyzers.voice_dissonance import run_voice_dissonance, CASUAL_MARKERS, MANUFACTURED_TYPOS
+from llm_detector.analyzers.instruction_density import run_instruction_density
+from llm_detector.analyzers.semantic_resonance import run_semantic_resonance
+from llm_detector.analyzers.self_similarity import run_self_similarity
+from llm_detector.analyzers.continuation_api import run_continuation_api, run_continuation_api_multi, run_continuation_batch
+from llm_detector.analyzers.continuation_local import run_continuation_local, _BackoffNGramLM
+from llm_detector.analyzers.perplexity import run_perplexity
+from llm_detector.analyzers.stylometry import extract_stylometric_features, mask_topical_content
+from llm_detector.analyzers.windowing import score_windows

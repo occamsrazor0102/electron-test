@@ -1,0 +1,28 @@
+# Core runtime dependencies plus scikit-learn (required for semantic flow tests/CI)
+pandas
+openpyxl
+scikit-learn
+
+# Optional: API providers for DNA-GPT continuation analysis
+# Install with: pip install ".[api]"
+# anthropic
+# openai
+
+# Optional: improved sentence segmentation
+# Install with: pip install ".[nlp]"
+# spacy
+# sentence-transformers
+# ftfy
+
+# Optional: local perplexity scoring
+# Install with: pip install ".[perplexity]"
+# transformers
+# torch
+
+# Optional: PDF input support
+# Install with: pip install ".[pdf]"
+# pypdf
+
+# Bundling as standalone executable
+# Install with: pip install ".[bundle]"
+# pyinstaller

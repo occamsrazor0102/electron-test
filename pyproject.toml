@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-detector"
+version = "0.68.0"
+description = "Multi-layer stylometric detection pipeline for identifying LLM-generated task prompts"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+
+dependencies = [
+    "pandas>=1.5",
+    "openpyxl>=3.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "anthropic>=0.20",
+    "openai>=1.0",
+]
+nlp = [
+    "spacy>=3.0",
+    "ftfy>=6.0",
+    "sentence-transformers>=2.0",
+    "scikit-learn>=1.0",
+]
+perplexity = [
+    "transformers>=4.20",
+    "torch>=2.0",
+]
+pdf = [
+    "pypdf>=3.0",
+]
+web = [
+    "streamlit>=1.20",
+]
+all = [
+    "llm-detector[api,nlp,perplexity,pdf,web]",
+]
+bundle = [
+    "llm-detector[api,nlp,perplexity,pdf,web]",
+    "pyinstaller>=6.0",
+]
+
+[project.scripts]
+llm-detector = "llm_detector.cli:main"
+llm-detector-dashboard = "llm_detector.cli:main_web"
+
+[project.gui-scripts]
+llm-detector-gui = "llm_detector.cli:main_gui"
+
+[tool.setuptools.packages.find]
+include = ["llm_detector*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["-ra", "-q"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "requires_gpu: marks tests requiring GPU (transformers, torch, etc.)",
+    "requires_network: marks tests requiring network access",
+]
+
+[tool.coverage.run]
+source = ["llm_detector"]
+# Exclude untestable GUI modules (Streamlit/Tkinter) from coverage measurement
+omit = [
+    "llm_detector/dashboard.py",
+    "llm_detector/gui.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+# Enforce minimum 60% coverage (excluding GUI modules) — Sprint 1 threshold
+fail_under = 60

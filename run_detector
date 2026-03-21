@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+"""
+LLM Detection Pipeline v0.61 — Thin launcher.
+See llm_detector/ package for full implementation.
+"""
+from llm_detector.cli import main
+
+if __name__ == '__main__':
+    main()
