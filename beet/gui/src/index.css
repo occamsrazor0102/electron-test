@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #FAFAF8;
+    --foreground: #1A1A1A;
+    --primary: #0D7377;
+    --primary-foreground: #ffffff;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+  }
+}
