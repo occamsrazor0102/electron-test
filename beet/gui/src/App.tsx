@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
 import { HomePage } from "./pages/HomePage";
 import { ResultsPage } from "./pages/ResultsPage";
@@ -7,9 +7,14 @@ import { HistoryPage } from "./pages/HistoryPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { HelpPage } from "./pages/HelpPage";
 
+// When running inside Electron (file:// protocol), use HashRouter so that
+// React Router navigation works correctly without a server.
+const isElectron = typeof window !== "undefined" && window.location.protocol === "file:";
+const Router = isElectron ? HashRouter : BrowserRouter;
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <div className="min-h-screen bg-[#FAFAF8]">
         <NavBar />
         <Routes>
@@ -21,6 +26,6 @@ export default function App() {
           <Route path="/help" element={<HelpPage />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 }

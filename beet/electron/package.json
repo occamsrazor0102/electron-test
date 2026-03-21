@@ -1,0 +1,79 @@
+{
+  "name": "beet-desktop",
+  "version": "2.0.0",
+  "description": "BEET 2.0 — AI Text Detection Desktop App",
+  "main": "dist/main.js",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n MAIN,RENDERER -c blue,green \"npm run watch:main\" \"npm run dev:renderer\"",
+    "dev:renderer": "cd ../gui && npm run dev",
+    "watch:main": "tsc --watch",
+    "build": "npm run build:renderer && tsc",
+    "build:renderer": "cd ../gui && npm run build",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "concurrently": "^9.1.0",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "~5.9.3"
+  },
+  "build": {
+    "appId": "io.beet.desktop",
+    "productName": "BEET",
+    "copyright": "Copyright © 2025 BEET",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../gui/dist",
+        "to": "renderer",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../../dist_single/llm-detector",
+        "to": "bin/llm-detector",
+        "filter": ["*"]
+      },
+      {
+        "from": "../../dist_single/llm-detector.exe",
+        "to": "bin/llm-detector.exe",
+        "filter": ["*"]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] }
+      ],
+      "icon": "assets/tray-icon.png"
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ],
+      "icon": "assets/tray-icon.png"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "assets/tray-icon.png"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "occamsrazor0102",
+      "repo": "electron-test"
+    }
+  }
+}

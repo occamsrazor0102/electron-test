@@ -11,4 +11,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // Use relative asset paths so the built app loads correctly from
+  // file:// URLs (Electron) as well as a web server.
+  base: './',
 })
