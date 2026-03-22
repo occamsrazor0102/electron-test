@@ -43,14 +43,7 @@ jobs:
 
   build:
     needs: test
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            artifact: llm-detector-windows-x86_64
-            binary: llm-detector.exe
-
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v5
@@ -59,28 +52,47 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ── Python backend ──────────────────────────────────────────────
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install ".[bundle]"
 
-      - name: Build single-file executable
-        run: pyinstaller llm_detector.spec --noconfirm --clean
+      - name: Build Python backend executable
+        run: pyinstaller llm_detector.spec --noconfirm --clean --distpath dist_single
         env:
           ONEFILE: "1"
 
-      - name: Verify executable exists (Windows)
-        if: runner.os == 'Windows'
+      - name: Verify Python executable
         shell: pwsh
         run: |
-          if (-not (Test-Path dist/llm-detector.exe)) { Write-Error "Build failed"; exit 1 }
-          Get-Item dist/llm-detector.exe
+          if (-not (Test-Path dist_single/llm-detector.exe)) { Write-Error "Python build failed"; exit 1 }
+          Get-Item dist_single/llm-detector.exe
 
-      - name: Upload artifact
+      # ── React GUI + Electron desktop app ────────────────────────────
+      - name: Install GUI dependencies
+        working-directory: beet/gui
+        run: npm ci
+
+      - name: Install Electron dependencies
+        working-directory: beet/electron
+        run: npm ci
+
+      - name: Build and package desktop app
+        working-directory: beet/electron
+        run: npm run dist:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows installer
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.artifact }}
-          path: dist/${{ matrix.binary }}
+          name: BEET-Setup-Windows
+          path: beet/electron/release/*.exe
 
   release:
     needs: build
@@ -88,20 +100,15 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.tag_name != '')
 
     steps:
-      - name: Download Windows artifact
+      - name: Download Windows installer
         uses: actions/download-artifact@v4
         with:
-          name: llm-detector-windows-x86_64
+          name: BEET-Setup-Windows
           path: windows/
-
-      - name: Rename Windows executable for release
-        run: |
-          cp windows/llm-detector.exe  llm-detector-windows-x86_64.exe
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag_name || github.ref_name }}
-          files: |
-            llm-detector-windows-x86_64.exe
+          files: windows/*.exe
           generate_release_notes: true

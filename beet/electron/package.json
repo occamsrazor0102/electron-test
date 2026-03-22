@@ -41,16 +41,6 @@
         "from": "../gui/dist",
         "to": "renderer",
         "filter": ["**/*"]
-      },
-      {
-        "from": "../../dist_single/llm-detector",
-        "to": "bin/llm-detector",
-        "filter": ["*"]
-      },
-      {
-        "from": "../../dist_single/llm-detector.exe",
-        "to": "bin/llm-detector.exe",
-        "filter": ["*"]
       }
     ],
     "mac": {
@@ -58,17 +48,35 @@
       "target": [
         { "target": "dmg", "arch": ["x64", "arm64"] }
       ],
-      "icon": "assets/tray-icon.png"
+      "icon": "assets/tray-icon.png",
+      "extraResources": [
+        {
+          "from": "../../dist_single/llm-detector",
+          "to": "bin/llm-detector"
+        }
+      ]
     },
     "win": {
       "target": [
         { "target": "nsis", "arch": ["x64"] }
       ],
-      "icon": "assets/tray-icon.png"
+      "icon": "assets/tray-icon.png",
+      "extraResources": [
+        {
+          "from": "../../dist_single/llm-detector.exe",
+          "to": "bin/llm-detector.exe"
+        }
+      ]
     },
     "linux": {
       "target": ["AppImage"],
-      "icon": "assets/tray-icon.png"
+      "icon": "assets/tray-icon.png",
+      "extraResources": [
+        {
+          "from": "../../dist_single/llm-detector",
+          "to": "bin/llm-detector"
+        }
+      ]
     },
     "publish": {
       "provider": "github",
