@@ -312,6 +312,29 @@ def test_dashboard_reports_missing_streamlit(monkeypatch, capsys):
         sys.modules.update(original_streamlit_modules)
 
 
+def test_serve_subcommand_delegates_to_main_serve(monkeypatch):
+    """main() with 'serve' subcommand delegates to main_serve() (packaged binary)."""
+    print("\n-- CLI SERVE SUBCOMMAND --")
+    from unittest.mock import patch, MagicMock
+
+    from llm_detector import cli
+
+    # Mock run_server so we don't actually start a blocking server
+    mock_run = MagicMock()
+    monkeypatch.setattr("llm_detector.server.run_server", mock_run)
+
+    with patch("sys.argv", ["llm-detector", "serve", "--port", "9999", "--host", "0.0.0.0"]):
+        cli.main()
+
+    check("run_server called", mock_run.called, "run_server was not called")
+    if mock_run.called:
+        _, kwargs = mock_run.call_args
+        check("port forwarded correctly", kwargs.get("port") == 9999,
+              f"got port={kwargs.get('port')}")
+        check("host forwarded correctly", kwargs.get("host") == "0.0.0.0",
+              f"got host={kwargs.get('host')}")
+
+
 def test_disable_channel_names_match_fusion():
     """Ensure --disable-channel valid names match actual channel names in fusion engine."""
     print("\n-- DISABLE-CHANNEL NAME CONSISTENCY --")
