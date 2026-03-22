@@ -47,6 +47,7 @@ bundle = [
 [project.scripts]
 llm-detector = "llm_detector.cli:main"
 llm-detector-dashboard = "llm_detector.cli:main_web"
+llm-detector-serve = "llm_detector.cli:main_serve"
 
 [project.gui-scripts]
 llm-detector-gui = "llm_detector.cli:main_gui"
@@ -72,6 +73,7 @@ source = ["llm_detector"]
 omit = [
     "llm_detector/dashboard.py",
     "llm_detector/gui.py",
+    "llm_detector/server.py",
 ]
 
 [tool.coverage.report]

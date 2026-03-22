@@ -1315,5 +1315,23 @@ def main_web():
     main_dashboard()
 
 
+def main_serve():
+    """Entry point for the ``llm-detector-serve`` console script.
+
+    Starts the lightweight JSON HTTP API server used by the BEET 2.0 desktop
+    app (Electron wrapper).  Equivalent to running::
+
+        llm-detector serve [--port PORT] [--host HOST]
+    """
+    import argparse as _ap
+    from llm_detector.server import run_server
+
+    parser = _ap.ArgumentParser(prog="llm-detector serve", description="BEET HTTP API server")
+    parser.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8000, help="Listen port (default: 8000)")
+    args = parser.parse_args()
+    run_server(host=args.host, port=args.port)
+
+
 if __name__ == '__main__':
     main()
