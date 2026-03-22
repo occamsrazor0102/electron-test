@@ -81,6 +81,8 @@ jobs:
       - name: Install Electron dependencies
         working-directory: beet/electron
         run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
 
       - name: Build and package desktop app
         working-directory: beet/electron
