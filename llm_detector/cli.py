@@ -631,6 +631,15 @@ def calibration_report(jsonl_path, cal_table=None, output_csv=None):
 
 
 def main():
+    # Handle 'serve' subcommand used by the packaged desktop binary.
+    # In production the Electron app spawns:
+    #   llm-detector serve --port 8000 --host 127.0.0.1
+    # Strip the subcommand and delegate to main_serve().
+    if len(sys.argv) > 1 and sys.argv[1] == "serve":
+        sys.argv = [sys.argv[0]] + sys.argv[2:]
+        main_serve()
+        return
+
     parser = argparse.ArgumentParser(description='LLM Detection Pipeline v0.66')
     parser.add_argument('input', nargs='?', help='Input file (.xlsx, .csv, or .pdf)')
     parser.add_argument('--gui', action='store_true', help='Launch desktop GUI mode')
