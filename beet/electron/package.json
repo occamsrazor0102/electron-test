@@ -61,12 +61,19 @@
         { "target": "nsis", "arch": ["x64"] }
       ],
       "icon": "assets/tray-icon.png",
+      "signDlls": false,
+      "sign": "./nosign.js",
       "extraResources": [
         {
-          "from": "../../dist_single/llm-detector.exe",
-          "to": "bin/llm-detector.exe"
+          "from": "../../dist_single/win-python/python",
+          "to": "bin/python",
+          "filter": ["**/*"]
         }
       ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false
     },
     "linux": {
       "target": ["AppImage"],

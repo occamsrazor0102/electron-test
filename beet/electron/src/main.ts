@@ -37,6 +37,10 @@ const RENDERER_PROD = path.join(process.resourcesPath, "renderer", "index.html")
 
 // In development, the Python server binary is resolved from PATH / virtual-env.
 // In production (packaged), we look in resources/bin/.
+//
+// On Windows the packaged build bundles an embeddable Python distribution
+// alongside the monolith script (beet_serve.py).  On Linux/macOS a
+// PyInstaller single-file binary is used instead.
 function getServerBinaryPath(): string {
   if (IS_DEV) {
     // In development, use `llm-detector-serve` installed into the active
@@ -44,8 +48,14 @@ function getServerBinaryPath(): string {
     // Windows automatically, so we don't need to add the extension here.
     return "llm-detector-serve";
   }
-  const ext = process.platform === "win32" ? ".exe" : "";
-  return path.join(process.resourcesPath, "bin", `llm-detector${ext}`);
+
+  if (process.platform === "win32") {
+    // Windows: use the bundled embeddable Python + monolith server script
+    return path.join(process.resourcesPath, "bin", "python", "python.exe");
+  }
+
+  // Linux / macOS: PyInstaller single-file binary
+  return path.join(process.resourcesPath, "bin", "llm-detector");
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -138,10 +148,17 @@ function startServer(): void {
   const binPath = getServerBinaryPath();
 
   // Dev mode: binary is `llm-detector-serve` (separate entry point, no subcommand)
-  // Prod mode: binary is `llm-detector` (monolithic binary, needs `serve` subcommand)
-  const spawnArgs: string[] = IS_DEV
-    ? ["--port", String(API_PORT), "--host", API_HOST]
-    : ["serve", "--port", String(API_PORT), "--host", API_HOST];
+  // Prod mode (Windows): python.exe beet_serve.py --port ... --host ...
+  // Prod mode (Linux/macOS): llm-detector serve --port ... --host ...
+  let spawnArgs: string[];
+  if (IS_DEV) {
+    spawnArgs = ["--port", String(API_PORT), "--host", API_HOST];
+  } else if (process.platform === "win32") {
+    const scriptPath = path.join(process.resourcesPath, "bin", "python", "beet_serve.py");
+    spawnArgs = [scriptPath, "--port", String(API_PORT), "--host", API_HOST];
+  } else {
+    spawnArgs = ["serve", "--port", String(API_PORT), "--host", API_HOST];
+  }
 
   console.log(`[BEET] Starting server: ${binPath} ${spawnArgs.join(" ")}`);
 
